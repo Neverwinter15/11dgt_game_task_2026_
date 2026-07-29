@@ -8,6 +8,7 @@ clock = pygame.time.Clock()
 running = True
 font = pygame.font.Font(None, 36)
 
+#variables to help recoard if a sprite has been clicked and cords
 sprite_clicked = False
 next_coordinates = None
 
@@ -46,10 +47,10 @@ while running:
             running = False
             
         
-        if event.type == pygame.MOUSEBUTTONDOWN and sprite_clicked:
+        if event.type == pygame.MOUSEBUTTONDOWN and sprite_clicked:# checks if sprite is clicked and mouse is clicked
            
-            if not sprite.rect.collidepoint(event.pos):
-                next_coordinates = event.pos
+            if not sprite.rect.collidepoint(event.pos): 
+                next_coordinates = event.pos 
                 sprite_clicked = False
 
     #shuts down the game when k button is pressed
@@ -62,12 +63,13 @@ while running:
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("green")
-    group.draw(screen)
 
-   
+    group.draw(screen)# displays sprite
+
+   # gets cords of the mouse
     mx, my = pygame.mouse.get_pos()
     mouse_text = font.render(f'Mouse: ({mx}, {my})', True, (0, 0, 0))
-    screen.blit(mouse_text, (20, 20))
+    screen.blit(mouse_text, (20, 20))# writes the words 
 
     # checks if sprite was clicked
     if sprite_clicked:
@@ -83,5 +85,5 @@ while running:
     # flip() the display to put your work on screen
     pygame.display.flip()
     clock.tick(60)# limits FPS to 60
-
+# quits game
 pygame.quit()
