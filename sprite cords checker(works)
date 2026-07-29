@@ -67,10 +67,10 @@ while running:
     group.draw(screen)# displays sprite
 
    # gets cords of the mouse
-    mx, my = pygame.mouse.get_pos()
-    mouse_text = font.render(f'Mouse: ({mx}, {my})', True, (0, 0, 0))
-    screen.blit(mouse_text, (20, 20))# writes the words 
-
+   # credits to Pygame Get Mouse Position
+   #https://medium.com/@amit25173/pygame-get-mouse-position-6096677f49e3
+   # the code from this website just displays the cords of the mouse and saves it as a  variable
+   
     # checks if sprite was clicked
     if sprite_clicked:
         status_str = "sprite clicked"
@@ -78,7 +78,7 @@ while running:
         status_str = f"recorded: {next_coordinates}"#displays cords of second click
     else:# tells you to click
         status_str = "click to start."
-
+    
     status_text = font.render(status_str, True, (0, 0, 0))
     screen.blit(status_text, (20, 60))
 
