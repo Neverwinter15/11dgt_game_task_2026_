@@ -9,12 +9,16 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
+#rounds coordinates to 100 px for simplicity
 player_pos = pygame.Vector2(screen.get_width() / 2, round(screen.get_height() / 2, -2))
 target_pos = (1000, 300)
+
+#placeholder code to find target
 def move(target_pos, mouse_coord):
     target_pos = (round(mouse_coord[0], -2), round(mouse_coord[1], -2))
     return target_pos
 
+#decides which direction to walk in by determining which direction target is and randomly choosing to move on x or y axis
 def pathfind(player_pos, target_pos):
     up_down = 0
     left_right = 0
@@ -60,12 +64,15 @@ while running:
     
     
     keys = pygame.key.get_pressed()
+    #closes game if escape key pressed
     if keys[pygame.K_ESCAPE]:
         pygame.quit()
+    #chooses target coordinates
     if keys[pygame.K_w]:
         mouse_coord = pygame.mouse.get_pos()
         target_pos = move(target_pos, mouse_coord)
         walk = True
+    #walks in direction that pathfind code selected and waits
     if walk == True:
         direction = pathfind(player_pos, target_pos)
         if direction == 0:
@@ -78,9 +85,6 @@ while running:
             player_pos.y += 100
         elif direction == 4:
             player_pos.y -= 100
-        
-        mouse_coord = pygame.mouse.get_pos()
-        target_pos = move(target_pos, mouse_coord)
         time.sleep(.25)
         
 
