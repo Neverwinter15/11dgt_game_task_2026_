@@ -24,16 +24,16 @@ next_maori_coordinates = None
 images = {
     "b_melee_1": pygame.transform.scale(pygame.image.load("british_melee_idle.png"), (100, 100)),
     "b_melee_2": pygame.transform.scale(pygame.image.load("british_melee_attack.png"), (100, 100)),
-    "b_range_1": pygame.transform.scale(pygame.image.load("british_ranged_idle.png"), (100, 100)),
-    "b_range_2": pygame.transform.scale(pygame.image.load("british_ranged_attack.png"), (100, 100)),
-    "b_cav_1": pygame.transform.scale(pygame.image.load("british_cavalry_idle.png"), (100, 100)),
-    "b_cav_2": pygame.transform.scale(pygame.image.load("british_cavalry_attack.png"), (100, 100)),
+    "b_ranged_1": pygame.transform.scale(pygame.image.load("british_ranged_idle.png"), (100, 100)),
+    "b_ranged_2": pygame.transform.scale(pygame.image.load("british_ranged_attack.png"), (100, 100)),
+    "b_cavalry_1": pygame.transform.scale(pygame.image.load("british_cavalry_idle.png"), (150, 150)),
+    "b_cavalry_2": pygame.transform.scale(pygame.image.load("british_cavalry_attack.png"), (150, 150)),
     "m_melee_1": pygame.transform.scale(pygame.image.load("maori_melee_idle.png"), (100, 100)),
     "m_melee_2": pygame.transform.scale(pygame.image.load("maori_melee_attack.png"), (100, 100)),
-    "m_range_1": pygame.transform.scale(pygame.image.load("maori_ranged_idle.png"), (100, 100)),
-    "m_range_2": pygame.transform.scale(pygame.image.load("maori_ranged_attack.png"), (100, 100)),
-    "m_cav_1": pygame.transform.scale(pygame.image.load("maori_cavalry_idle.png"), (100, 100)),
-    "m_cav_2": pygame.transform.scale(pygame.image.load("maori_cavalry_attack.png"), (100, 100))
+    "m_ranged_1": pygame.transform.scale(pygame.image.load("maori_ranged_idle.png"), (100, 100)),
+    "m_ranged_2": pygame.transform.scale(pygame.image.load("maori_ranged_attack.png"), (100, 100)),
+    "m_cavalry_1": pygame.transform.scale(pygame.image.load("maori_cavalry_idle.png"), (150, 150)),
+    "m_cavalry_2": pygame.transform.scale(pygame.image.load("maori_cavalry_attack.png"), (150, 150))
 }
 
 def pathfind(player_pos, target_pos):
@@ -207,7 +207,7 @@ class MeleeMaori(pygame.sprite.Sprite):
             npc_pos.y -= 100
 
 
-sprite2 = MeleeMaori(images["m_melee_1"], on_maori_click)
+sprite2 = MeleeMaori(images["m_cavalry_1"], on_maori_click)
 
 group = pygame.sprite.Group(sprite, sprite2)
 
@@ -272,10 +272,10 @@ while running:
 
     else:
         sprite.update(events, player_pos, images["b_melee_1"])
-        sprite2.update(events, npc_pos, images["m_melee_1"])
+        sprite2.update(events, npc_pos, images["m_cavalry_1"])
         if cooldown > 0:
             cooldown -= 1
-    sprite2.update(events, npc_pos, images["m_melee_1"])
+    sprite2.update(events, npc_pos, images["m_cavalry_1"])
     
 
 
