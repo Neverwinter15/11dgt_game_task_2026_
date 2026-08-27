@@ -36,19 +36,19 @@ images = {
     "m_cavalry_2": pygame.transform.scale(pygame.image.load("maori_cavalry_attack.png"), (150, 150))
 }
 
-def pathfind(player_pos, target_pos):
+def pathfind(unit_pos, target_pos):
     up_down = 0
     left_right = 0
-    if player_pos[0] == target_pos[0] and player_pos[1] == target_pos[1]:
+    if unit_pos[0] == target_pos[0] and unit_pos[1] == target_pos[1]:
         direction = 0
         return direction
-    if player_pos[0] > target_pos[0]:
+    if unit_pos[0] > target_pos[0]:
         left_right = 1
-    elif player_pos[0] < target_pos[0]:
+    elif unit_pos[0] < target_pos[0]:
         left_right = 2
-    if player_pos[1] < target_pos[1]:
+    if unit_pos[1] < target_pos[1]:
         up_down = 3
-    elif player_pos[1] > target_pos[1]:
+    elif unit_pos[1] > target_pos[1]:
         up_down = 4
     if up_down != 0 and left_right != 0:
         choose = random.randint(1,2)
@@ -62,31 +62,6 @@ def pathfind(player_pos, target_pos):
         direction = left_right
     return direction
 
-def maori_pathfind(npc_pos, target_pos):
-    up_down = 0
-    left_right = 0
-    if npc_pos[0] == target_pos[0] and npc_pos[1] == target_pos[1]:
-        direction = 0
-        return direction
-    if player_pos[0] > target_pos[0]:
-        left_right = 1
-    elif player_pos[0] < target_pos[0]:
-        left_right = 2
-    if player_pos[1] < target_pos[1]:
-        up_down = 3
-    elif player_pos[1] > target_pos[1]:
-        up_down = 4
-    if up_down != 0 and left_right != 0:
-        choose = random.randint(1,2)
-        if choose == 1:
-            direction = up_down
-        else:
-            direction = left_right
-    elif up_down != 0:
-        direction = up_down
-    else:
-        direction = left_right
-    return direction
 #compacted movement into a function.
 
 walk = False
@@ -194,7 +169,7 @@ class MeleeMaori(pygame.sprite.Sprite):
         global maori_walk
         global npc_pos
     #same walking code as before, it changes player coordinates based on direction from pathfind code
-        direction = maori_pathfind(npc_pos, target_pos)
+        direction = pathfind(npc_pos, target_pos)
         if direction == 0:
             maori_walk = False
         elif direction == 1:
@@ -207,7 +182,7 @@ class MeleeMaori(pygame.sprite.Sprite):
             npc_pos.y -= 100
 
 
-sprite2 = MeleeMaori(images["m_cavalry_1"], on_maori_click)
+sprite2 = MeleeMaori(images["m_melee_1"], on_maori_click)
 
 group = pygame.sprite.Group(sprite, sprite2)
 
@@ -272,10 +247,10 @@ while running:
 
     else:
         sprite.update(events, player_pos, images["b_melee_1"])
-        sprite2.update(events, npc_pos, images["m_cavalry_1"])
+        sprite2.update(events, npc_pos, images["m_melee_1"])
         if cooldown > 0:
             cooldown -= 1
-    sprite2.update(events, npc_pos, images["m_cavalry_1"])
+    sprite2.update(events, npc_pos, images["m_melee_1"])
     
 
 
