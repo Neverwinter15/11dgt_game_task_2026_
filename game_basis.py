@@ -10,13 +10,14 @@ clock = pygame.time.Clock()
 running = True
 font = pygame.font.Font(None, 36)
 dt = 0
+turn = True
 b_m_coords = pygame.Vector2(round(screen.get_width() / 2, -2), round(screen.get_height() / 2, -2))
 b_r_coords = pygame.Vector2(round(screen.get_width() / 4, -2), round(screen.get_height() / 4, -2))
 b_c_coords = pygame.Vector2(round(screen.get_width() / 7, -2), round(screen.get_height() / 7, -2))
 m_m_coords = pygame.Vector2(round(screen.get_width() / 3, -2), round(screen.get_height() / 3, -2))
 m_r_coords = pygame.Vector2(round(screen.get_width() / 5, -2), round(screen.get_height() / 3, -2))
 m_c_coords = pygame.Vector2(round(screen.get_width() / 2, -2), round(screen.get_height() / 4, -2))
-
+turn_order = "" 
 
 target_pos = (1000, 300)
 maori_target_pos = (1000, 300)
@@ -440,21 +441,34 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN and sprite_clicked:# checks if sprite is clicked and mouse is clicked
             if not b_m_sprite.rect.collidepoint(event.pos): 
-                next_coordinates = event.pos
-                next_coordinates = (round(int(next_coordinates[0]), -2), round(int(next_coordinates[1]), -2))
-                sprite_clicked = False
-                b_m_walk = True
+                if turn == True:
+                 next_coordinates = event.pos
+                 next_coordinates = (round(int(next_coordinates[0]), -2), round(int(next_coordinates[1]), -2))
+                 sprite_clicked = False
+                 b_m_walk = True
+                else:
+                  b_m_walk == False
+       
         if event.type == pygame.MOUSEBUTTONDOWN and maori_sprite_clicked:
-            if not m_m_sprite.rect.collidepoint(event.pos): 
-                next_maori_coordinates = event.pos
-                next_maori_coordinates = (round(int(next_maori_coordinates[0]), -2), round(int(next_maori_coordinates[1]), -2))
-                maori_sprite_clicked = False
-                m_m_walk = True
-
+            if not m_m_sprite.rect.collidepoint(event.pos):
+                if turn == False: 
+                 next_maori_coordinates = event.pos
+                 next_maori_coordinates = (round(int(next_maori_coordinates[0]), -2), round(int(next_maori_coordinates[1]), -2))
+                 maori_sprite_clicked = False
+                 m_m_walk = True
+                else:
+                  m_m_walk = False
+          
     #shuts down the game when k button is pressed
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]:
         running = False
+    if keys[pygame.K_LEFT]:
+        if turn == True:
+           turn = False
+    if keys[pygame.K_RIGHT]:
+        if turn ==False:
+          turn=True
   
     target_pos = next_coordinates
     maori_target_pos = next_maori_coordinates
@@ -506,21 +520,40 @@ while running:
    # the code from this website just displays the cords of the mouse and saves it as a  variable
    
     # checks if sprite was clicked
-    if sprite_clicked:
-        status_str = "sprite clicked"
+    #if sprite_clicked:
+      #  status_str = "sprite clicked"
     
-    elif next_maori_coordinates:
-        status_str = f"recorded: {next_maori_coordinates}"#displays cords of second click
-        m_m_walk = True
-    elif next_coordinates:
-        status_str = f"recorded: {next_coordinates}"#displays cords of second click
-        b_m_walk = True
-    else:# tells you to click
-        status_str = "click to start."
+    #elif next_maori_coordinates:
+     #   status_str = f"recorded: {next_maori_coordinates}"#displays cords of second click
+       # m_m_walk = True
+   # elif next_coordinates:
+   #     status_str = f"recorded: {next_coordinates}"#displays cords of second click
+   #     b_m_walk = True
+   # else:# tells you to click
+  #      status_str = "click to start."
     
-    status_text = font.render(status_str, True, (0, 0, 0))
+    #status_text = font.render(status_str, True, (0, 0, 0))
+    #screen.blit(status_text, (20, 60))
+    
+    if turn == True:
+        turn_order = "British turn"
+
+    elif turn == False:
+        turn_order = "Māori turn"
+    
+    if turn == True:
+        make_turn = "press right arrow to end turn"
+    else: 
+        make_turn = "press left arrow to end turn"
+
+
+    status_text = font.render(turn_order, True, (0, 0, 0))
     screen.blit(status_text, (20, 60))
-    
+
+    turn_instructions = font.render(make_turn, True, (0, 0, 0))
+    screen.blit(turn_instructions, (20, 85))
+
+
     # flip() the display to put your work on screen
     pygame.display.flip()
     clock.tick(60)# limits FPS to 60
