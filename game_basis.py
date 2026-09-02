@@ -514,11 +514,6 @@ while running:
     group.draw(screen)# displays sprite
 
 
-   # gets cords of the mouse
-   # credits to Pygame Get Mouse Position
-   #https://medium.com/@amit25173/pygame-get-mouse-position-6096677f49e3
-   # the code from this website just displays the cords of the mouse and saves it as a  variable
-   
     # checks if sprite was clicked
     #if sprite_clicked:
       #  status_str = "sprite clicked"
