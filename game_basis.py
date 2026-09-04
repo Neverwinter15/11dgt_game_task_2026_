@@ -1,3 +1,4 @@
+#game basis plus home screen
 import pygame
 import random
 import time
@@ -9,25 +10,28 @@ screen = pygame.display.set_mode((1000,800))
 clock = pygame.time.Clock()
 running = True
 font = pygame.font.Font(None, 36)
+sub_font = pygame.font.Font(None, 50)
+sub_sub_font = pygame.font.Font(None, 10)
 dt = 0
 turn = True
-b_m_coords = pygame.Vector2(round(screen.get_width() / 2, -2), round(screen.get_height() / 2, -2))
+b_m_coords = pygame.Vector2(200, 700)
 b_r_coords = pygame.Vector2(round(screen.get_width() / 4, -2), round(screen.get_height() / 4, -2))
 b_c_coords = pygame.Vector2(round(screen.get_width() / 7, -2), round(screen.get_height() / 7, -2))
-m_m_coords = pygame.Vector2(round(screen.get_width() / 3, -2), round(screen.get_height() / 3, -2))
+m_m_coords = pygame.Vector2(800, 200)
 m_r_coords = pygame.Vector2(round(screen.get_width() / 5, -2), round(screen.get_height() / 3, -2))
 m_c_coords = pygame.Vector2(round(screen.get_width() / 2, -2), round(screen.get_height() / 4, -2))
-
-
-
-
+turn_order = "" 
+go = False
 target_pos = (1000, 300)
 maori_target_pos = (1000, 300)
 #variables to help record if a sprite has been clicked and cords
-sprite_clicked = False
+b_m_clicked = False
+b_r_clicked = False
 maori_sprite_clicked = False
-next_coordinates = None
+b_m_next_coords = None
 next_maori_coordinates = None
+b_r_next_coords = None
+
 
 images = {
     "b_melee_1": pygame.transform.scale(pygame.image.load("images/british_melee_idle.png"), (100, 100)),
@@ -73,14 +77,20 @@ def pathfind(unit_pos, target_pos):
 #compacted movement into a function.
 
 b_m_walk = False
+b_r_walk = False
 m_m_walk = False
 
 
-#detects when it is clicked
-def on_click():
-    global sprite_clicked
-    sprite_clicked = True
-def on_maori_click():
+#detects when a sprite is clicked
+def on_bm_click():
+    global b_m_clicked
+    b_m_clicked = True
+
+def on_br_click():
+    global b_r_clicked
+    b_r_clicked = True
+
+def on_mm_click():
     global maori_sprite_clicked
     maori_sprite_clicked = True 
 
@@ -107,6 +117,7 @@ cavalry_health = 12
 cavalry_mana_cost = 5
 cavalry_steps = 7
 cavalry_range = 150
+
 
 #this defines the object for a British melee sprite
 class BritishMeleeSprite(pygame.sprite.Sprite):
@@ -137,8 +148,10 @@ class BritishMeleeSprite(pygame.sprite.Sprite):
                     return True 
         return False
     def damage(self, damage):
+        global b_m_coords
         self.health -= damage
         if self.health <= 0:
+            b_m_coords = pygame.Vector2(10000,10000)
             self.Alive = False
             group.remove(b_m_sprite)
     
@@ -160,11 +173,11 @@ class BritishMeleeSprite(pygame.sprite.Sprite):
             b_m_coords.y -= 100
 
 
-b_m_sprite = BritishMeleeSprite(b_m_coords, images["b_melee_1"], on_click)
+b_m_sprite = BritishMeleeSprite(b_m_coords, images["b_melee_1"], on_bm_click)
 
 #this defines the object for a British ranged sprite
 class BritishRangedSprite(pygame.sprite.Sprite):
-    def __init__(self, image, callback):
+    def __init__(self, coords, image, callback):
         global b_r_coords
         super().__init__()
         #x = x_cords
@@ -172,18 +185,18 @@ class BritishRangedSprite(pygame.sprite.Sprite):
         self.image = image
         # self.image.fill((0, 0, 255)) 
         self.rect = self.image.get_rect()
-        self.rect.x = round(int(b_r_coords.x), -2)
-        self.rect.y = round(int(b_r_coords.y), -2)
+        self.rect.x = round(int(coords[0]), -2)
+        self.rect.y = round(int(coords[1]), -2)
         self.callback = callback
         self.health = ranged_health
         self.strength = ranged_strength
         self.Alive = True
         
     #update code makes the sprite act and updates visual
-    def update(self, events, image):
+    def update(self, coords, events, image):
         self.image = image
-        self.rect.x = int(b_r_coords.x)
-        self.rect.y = int(b_r_coords.y)
+        self.rect.x = int(coords[0])
+        self.rect.y = int(coords[1])
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.rect.collidepoint(event.pos):
@@ -191,16 +204,19 @@ class BritishRangedSprite(pygame.sprite.Sprite):
                     return True 
         return False
     def damage(self, damage):
+        global b_r_coords
         self.health -= damage
         if self.health <= 0:
+            b_r_coords = pygame.Vector2(10000,10000)
             self.Alive = False
             group.remove(b_r_sprite)
     
     def move(self, target_pos):
         #player_pos and walk were made global for simplicity
         global b_r_walk
+        global b_r_coords
         #same walking code as before, it changes player coordinates based on direction from pathfind code
-        direction = pathfind(target_pos)
+        direction = pathfind(b_r_coords, target_pos)
         if direction == 0:
             b_r_walk = False
         elif direction == 1:
@@ -212,7 +228,7 @@ class BritishRangedSprite(pygame.sprite.Sprite):
         elif direction == 4:
             b_r_coords.y -= 100
 
-b_r_sprite = BritishRangedSprite(images["b_ranged_1"], on_click)
+b_r_sprite = BritishRangedSprite(b_r_coords, images["b_ranged_1"], on_br_click)
 
 #this defines the object for a British cavalry sprite
 class BritishCavalrySprite(pygame.sprite.Sprite):
@@ -264,7 +280,7 @@ class BritishCavalrySprite(pygame.sprite.Sprite):
         elif direction == 4:
             b_c_coords.y -= 100
 
-b_c_sprite = BritishCavalrySprite(images["b_cavalry_1"], on_click)
+b_c_sprite = BritishCavalrySprite(images["b_cavalry_1"], on_bm_click)
 
 #this defines the object for a Maori melee sprite
 class MaoriMeleeSprite(pygame.sprite.Sprite):
@@ -295,8 +311,10 @@ class MaoriMeleeSprite(pygame.sprite.Sprite):
                     return True 
         return False
     def damage(self, damage):
+        global m_m_coords
         self.health -= damage
         if self.health <= 0:
+            m_m_coords = pygame.Vector2(10000,10000)
             self.Alive = False
             group.remove(m_m_sprite)
     
@@ -318,7 +336,7 @@ class MaoriMeleeSprite(pygame.sprite.Sprite):
             m_m_coords.y -= 100
 
 
-m_m_sprite = MaoriMeleeSprite(m_m_coords, images["m_melee_1"], on_maori_click)
+m_m_sprite = MaoriMeleeSprite(m_m_coords, images["m_melee_1"], on_mm_click)
 
 #this defines the object for a Maori ranged sprite
 class MaoriRangedSprite(pygame.sprite.Sprite):
@@ -371,7 +389,7 @@ class MaoriRangedSprite(pygame.sprite.Sprite):
             m_r_coords.y -= 100
 
 
-m_r_sprite = MaoriRangedSprite(images["m_ranged_1"], on_maori_click)
+m_r_sprite = MaoriRangedSprite(images["m_ranged_1"], on_mm_click)
 
 #this defines the object for a Maori ranged sprite
 class MaoriCavalrySprite(pygame.sprite.Sprite):
@@ -424,12 +442,14 @@ class MaoriCavalrySprite(pygame.sprite.Sprite):
             m_c_coords.y -= 100
 
 
-m_c_sprite = MaoriCavalrySprite(images["m_cavalry_1"], on_maori_click)
+m_c_sprite = MaoriCavalrySprite(images["m_cavalry_1"], on_mm_click)
 
 group = pygame.sprite.Group(b_m_sprite, b_r_sprite, b_c_sprite, m_m_sprite, m_r_sprite, m_c_sprite)
 
 
-
+bm_cooldown = 0
+mm_cooldown = 0
+br_cooldown = 0
 
 while running:
     # poll for events
@@ -441,17 +461,17 @@ while running:
             running = False
             
 
-        if event.type == pygame.MOUSEBUTTONDOWN and sprite_clicked:# checks if sprite is clicked and mouse is clicked
+        if event.type == pygame.MOUSEBUTTONDOWN and b_m_clicked:# checks if sprite is clicked and mouse is clicked
             if not b_m_sprite.rect.collidepoint(event.pos): 
                 if turn == True:
-                 next_coordinates = event.pos
-                 next_coordinates = (round(int(next_coordinates[0]), -2), round(int(next_coordinates[1]), -2))
-                 sprite_clicked = False
+                 b_m_next_coords = event.pos
+                 b_m_next_coords = (round(int(b_m_next_coords[0]), -2), round(int(b_m_next_coords[1]), -2))
+                 b_m_clicked = False
                  b_m_walk = True
                 else:
                   b_m_walk == False
        
-        if event.type == pygame.MOUSEBUTTONDOWN and maori_sprite_clicked:
+        elif event.type == pygame.MOUSEBUTTONDOWN and maori_sprite_clicked:
             if not m_m_sprite.rect.collidepoint(event.pos):
                 if turn == False: 
                  next_maori_coordinates = event.pos
@@ -460,7 +480,14 @@ while running:
                  m_m_walk = True
                 else:
                   m_m_walk = False
-          
+        elif event.type == pygame.MOUSEBUTTONDOWN and b_r_clicked:
+                if not b_r_sprite.rect.collidepoint(event.pos):
+                    if turn == True:
+                        b_r_next_coords = event.pos
+                        b_r_next_coords = (round(int(b_r_next_coords[0]), -2), round(int(b_r_next_coords[1]), -2))
+                        b_r_clicked = False
+                        b_r_walk = True
+
     #shuts down the game when k button is pressed
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]:
@@ -468,16 +495,21 @@ while running:
     if keys[pygame.K_LEFT]:
         if turn == True:
            turn = False
+           mm_cooldown = 0
     if keys[pygame.K_RIGHT]:
         if turn ==False:
           turn=True
-  
-    target_pos = next_coordinates
+          bm_cooldown = 0
+          br_cooldown = 0
+    if keys[pygame.K_SPACE]:
+        go = True
+    target_pos = b_m_next_coords
     maori_target_pos = next_maori_coordinates
+    r_target_pos = b_r_next_coords
 
-    proximity_distance = m_m_coords.distance_to(b_m_coords)
+    m_to_m = m_m_coords.distance_to(b_m_coords)
+    r_to_m = m_m_coords.distance_to(b_r_coords)
 
-    range = proximity_distance < 200
 
     if b_m_walk == True:
         b_m_sprite.move(target_pos)
@@ -485,27 +517,69 @@ while running:
     if m_m_walk == True:
         m_m_sprite.move(maori_target_pos)
         time.sleep(0.25)
+    if b_r_walk == True:
+        b_r_sprite.move(r_target_pos)
+        time.sleep(0.25)
 
 #checks if you are in range to attack. if so, updates sprites in attack pose
-    range = proximity_distance > 200
-    cooldown = 0
-    if range == False and b_m_walk == False and cooldown == 0:
-        attack = True
-    else:
-        attack = False
+    bm_mm_range = m_to_m > melee_range
+    br_mm_range = r_to_m > ranged_damage_range
+    mm_br_range = r_to_m > melee_range
 
-    if attack == True:
+    
+    
+    # if range == False and b_m_walk == False and cooldown == 0:
+    #     attack = True
+    # else:
+    #     attack = False
+
+    if bm_mm_range == False and b_m_walk == False and m_m_walk == False and bm_cooldown == 0 and turn == True:
+        bm_attack_mm = True
+    else:
+        bm_attack_mm = False
+
+    if br_mm_range == False and b_r_walk == False and m_m_walk == False and br_cooldown == 0 and turn == True:
+        br_attack_mm = True
+    else:
+        br_attack_mm = False
+
+    if bm_mm_range == False and b_m_walk == False and m_m_walk == False and mm_cooldown == 0 and turn == False:
+        mm_attack_bm = True
+    else:
+        mm_attack_bm = False
+
+    if mm_br_range == False and b_r_walk == False and m_m_walk == False and mm_cooldown == 0 and turn == False:
+        mm_attack_br = True
+    else:
+        mm_attack_br = False
+
+    if bm_attack_mm:
         b_m_sprite.update(b_m_coords, events, images["b_melee_2"])
-        m_m_sprite.damage(1)
-        attack = False
-        cooldown = 2000
+        time.sleep(0.25)
+        m_m_sprite.damage(20)
+        bm_cooldown = 1
+    if br_attack_mm:
+        b_r_sprite.update(b_m_coords, events, images["b_ranged_2"])
+        time.sleep(0.25)
+        m_m_sprite.damage(20)
+        bm_cooldown = 1
+    if mm_attack_bm:
+        m_m_sprite.update(m_m_coords, events, images["m_melee_2"])
+        time.sleep(0.25)
+        b_m_sprite.damage(20)
+        mm_cooldown = 1
+    if mm_attack_br:
+        m_m_sprite.update(m_m_coords, events, images["m_melee_2"])
+        time.sleep(0.25)
+        b_r_sprite.damage(20)
+        mm_cooldown = 1
 
     else:
         b_m_sprite.update(b_m_coords, events, images["b_melee_1"])
         m_m_sprite.update(m_m_coords, events, images["m_melee_1"])
-        if cooldown > 0:
-            cooldown -= 1
+
     m_m_sprite.update(m_m_coords, events, images["m_melee_1"])
+    b_r_sprite.update(b_r_coords, events, images["b_ranged_1"])
     
 
 
@@ -514,7 +588,6 @@ while running:
 
 
     group.draw(screen)# displays sprite
-
 
 
     # checks if sprite was clicked
@@ -543,6 +616,34 @@ while running:
         make_turn = "press right arrow to end turn"
     else: 
         make_turn = "press left arrow to end turn"
+    if go == False:
+       home_words_title = "Tales of Tarinaki"
+       home_screen_cover = pygame.draw.rect(screen, (0, 0, 0), [0, 0, 1500, 1500])
+       home_words_subtitle = "(press space to start)"
+       home_words_declaration = "A historically accurate game!*"
+       home_words_moa_declaration = "*This game is historically accurete except for Māori riding Moa"
+    
+    else:
+        home_words_title = ""
+        home_words_subtitle = ""
+        home_words_declaration = ""
+        home_words_moa_declaration = ""
+
+    home = font.render(home_words_title, True, (255, 255, 255) )
+    screen.blit(home, (220, 264))
+
+    home_subtitle = sub_font.render(home_words_subtitle, True, (255, 255, 255) )
+    screen.blit(home_subtitle, (310, 400))
+
+    home_declaration = sub_font.render(home_words_declaration, True, (255, 255, 255) )
+    screen.blit(home_declaration, (250, 350))
+
+    moa_declaration = sub_sub_font.render(home_words_moa_declaration, True, (255,255,255) )
+    screen.blit(moa_declaration, (700,700))
+
+
+
+
 
 
     status_text = font.render(turn_order, True, (0, 0, 0))
