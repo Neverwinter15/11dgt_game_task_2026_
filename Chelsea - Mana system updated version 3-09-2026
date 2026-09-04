@@ -562,7 +562,7 @@ while running:
     turn_instructions = font.render(make_turn, True, (0, 0, 0))
     screen.blit(turn_instructions, (20, 85))
 
-    draw_score(screen, 20, 100)
+    draw_score(screen, 20, 110)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
