@@ -17,7 +17,9 @@ b_c_coords = pygame.Vector2(round(screen.get_width() / 7, -2), round(screen.get_
 m_m_coords = pygame.Vector2(round(screen.get_width() / 3, -2), round(screen.get_height() / 3, -2))
 m_r_coords = pygame.Vector2(round(screen.get_width() / 5, -2), round(screen.get_height() / 3, -2))
 m_c_coords = pygame.Vector2(round(screen.get_width() / 2, -2), round(screen.get_height() / 4, -2))
-turn_order = "" 
+
+
+
 
 target_pos = (1000, 300)
 maori_target_pos = (1000, 300)
@@ -512,6 +514,7 @@ while running:
 
 
     group.draw(screen)# displays sprite
+
 
 
     # checks if sprite was clicked
