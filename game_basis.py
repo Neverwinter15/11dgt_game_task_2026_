@@ -12,6 +12,7 @@ running = True
 font = pygame.font.Font(None, 36)
 sub_font = pygame.font.Font(None, 50)
 sub_sub_font = pygame.font.Font(None, 10)
+title_font = pygame.font.Font(None ,100)
 dt = 0
 turn = True
 b_m_coords = pygame.Vector2(200, 700)
@@ -629,7 +630,7 @@ while running:
         home_words_declaration = ""
         home_words_moa_declaration = ""
 
-    home = font.render(home_words_title, True, (255, 255, 255) )
+    home = title_font.render(home_words_title, True, (255, 255, 255) )
     screen.blit(home, (220, 264))
 
     home_subtitle = sub_font.render(home_words_subtitle, True, (255, 255, 255) )
