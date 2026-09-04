@@ -141,7 +141,6 @@ class BritishMeleeSprite(pygame.sprite.Sprite):
         if self.health <= 0:
             self.Alive = False
             group.remove(b_m_sprite)
-            mana += 5
     
     def move(self, target_pos):
         #player_pos and walk were made global for simplicity
@@ -296,10 +295,12 @@ class MaoriMeleeSprite(pygame.sprite.Sprite):
                     return True 
         return False
     def damage(self, damage):
+        global mana
         self.health -= damage
         if self.health <= 0:
             self.Alive = False
             group.remove(m_m_sprite)
+            mana += 5
     
     def move(self, target_pos):
         #player_pos and walk were made global for simplicity
@@ -350,10 +351,12 @@ class MaoriRangedSprite(pygame.sprite.Sprite):
                     return True 
         return False
     def damage(self, damage):
+        global mana
         self.health -= damage
         if self.health <= 0:
             self.Alive = False
             group.remove(m_r_sprite)
+            mana += 5
  
     def move(self, target_pos):
         #player_pos and walk were made global for simplicity
@@ -403,10 +406,12 @@ class MaoriCavalrySprite(pygame.sprite.Sprite):
                     return True 
         return False
     def damage(self, damage):
+        global mana
         self.health -= damage
         if self.health <= 0:
             self.Alive = False
             group.remove(m_c_sprite)
+            mana += 5
     
     def move(self, target_pos):
         #player_pos and walk were made global for simplicity
@@ -562,7 +567,7 @@ while running:
     turn_instructions = font.render(make_turn, True, (0, 0, 0))
     screen.blit(turn_instructions, (20, 85))
 
-    draw_score(screen, 20, 110)
+    draw_score(screen, 20, 120)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
